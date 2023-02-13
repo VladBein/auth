@@ -3,10 +3,10 @@ from typing import List, Union
 
 from redis import Redis
 
-from src.auth_user.adapters.repository import AbstractRepository, DjangoORMRepository
+from auth_user.adapters.repository import AbstractRepository, DjangoORMRepository
 from auth_user.domain.commands import Command
 from auth_user.domain.events import Event
-from src.auth_user.domain.model.model import AuthUser
+from auth_user.domain.model.model import AuthUser
 
 
 class UnitOfWork:

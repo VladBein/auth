@@ -20,3 +20,7 @@ class RegistrationSerializer(BaseUserSerializer):
 
 class AuthorizationSerializer(Serializer):
     Authorization = CharField(allow_blank=False)
+
+
+class ChangePasswordSerializer(Serializer):
+    new_password = CharField(allow_blank=False)

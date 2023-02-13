@@ -1,8 +1,8 @@
 from typing import Optional
 import abc
 
-from src.auth_user.domain.model.user import ModelUser
-from src.core.models import User
+from auth_user.domain.model.user import ModelUser
+from core.models.user import User
 
 
 class AbstractRepository(abc.ABC):

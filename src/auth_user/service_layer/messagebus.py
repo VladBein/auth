@@ -1,32 +1,38 @@
 import logging
 from typing import List, Dict, Callable, Type, Union
 
-from allocation.domain import commands, events
-from . import handlers
-from .uow import AbstractUnitOfWork
 
+from . import handlers
+from .uow import UnitOfWork
+from ..domain import events, commands
 
 logger = logging.getLogger(__name__)
 
 
 EVENT_HANDLERS = {
-    events.OutOfStock: [handlers.send_out_of_stock_notification],
-    events.Allocated: [handlers.publish_allocated_event],
+    events.SendMessage: [handlers.send_message],
 }  # type: Dict[Type[events.Event], List[Callable]]
 
 COMMAND_HANDLERS = {
-    commands.Allocate: handlers.allocate,
-    commands.CreateBatch: handlers.add_batch,
-    commands.ChangeBatchQuantity: handlers.change_batch_quantity,
+    commands.RequestRegistration: handlers.make_registration_request,
+    commands.ConfirmRegistration: handlers.add_user,
+    commands.CreateTokens: handlers.create_tokens,
+    commands.Authorize: handlers.authorize_user,
+    commands.AuthenticateByAccessToken: handlers.authenticate_user,
+    commands.AuthenticateByRefreshToken: handlers.authenticate_user,
+    commands.ChangePassword: handlers.change_password,
+    commands.RequestRestorePassword: handlers.make_restore_password_request,
+    commands.RestorePassword: handlers.restore_password,
 }  # type: Dict[Type[commands.Command], Callable]
 
 
 Message = Union[commands.Command, events.Event]
 
+
 def handle_event(
     event: events.Event,
     queue: List[Message],
-    uow: AbstractUnitOfWork,
+    uow: UnitOfWork,
 ):
     for handler in EVENT_HANDLERS[type(event)]:
         try:
@@ -41,7 +47,7 @@ def handle_event(
 def handle_command(
     command: commands.Command,
     queue: List[Message],
-    uow: AbstractUnitOfWork,
+    uow: UnitOfWork,
 ):
     logger.debug("handling command %s", command)
     try:
@@ -54,7 +60,7 @@ def handle_command(
         raise
 
 
-def handle(message: Message, uow: AbstractUnitOfWork):
+def handle(message: Message, uow: UnitOfWork):
     results = []
     queue = [message]
     while queue:

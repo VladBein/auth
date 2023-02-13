@@ -4,7 +4,7 @@ from .model import AuthUser
 from .user import ModelUser
 from .utils import hashing
 from ..commands import CreateTokens
-from src.auth_user.common.exceptions import InvalidPassword
+from auth_user.common.exceptions import InvalidPassword
 
 
 class Authorization(AuthUser):

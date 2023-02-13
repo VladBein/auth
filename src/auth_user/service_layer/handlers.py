@@ -2,17 +2,17 @@ from typing import Union
 from enum import Enum
 from dataclasses import astuple, asdict
 
-from src.auth_user.domain.commands import RequestRegistration, ConfirmRegistration, CreateTokens, Authorize, \
+from auth_user.domain.commands import RequestRegistration, ConfirmRegistration, CreateTokens, Authorize, \
     AuthenticateByAccessToken, AuthenticateByRefreshToken, ChangePassword, RequestRestorePassword, RestorePassword
-from src.auth_user.domain.events import SendMessage
+from auth_user.domain.events import SendMessage
 from .uow import UnitOfWork, DjangoORMUnitOfWork, DjangoORMAndRedisClientUnitOfWork
 from .serializers import UserDetailSerializer
-from src.auth_user.domain.model.user import ModelUser
-from src.auth_user.domain.model.token import JWTToken
-from src.auth_user.domain.model.authorization import Authorization
-from src.auth_user.domain.model.authentication import AuthenticationByAccessToken, AuthenticationByRefreshToken
-from src.auth_user.domain.model.utils import decode_base64
-from src.auth_user.common.exceptions import UserAlreadyExists, RegistrationRequestAlreadyExists, \
+from auth_user.domain.model.user import ModelUser
+from auth_user.domain.model.token import JWTToken
+from auth_user.domain.model.authorization import Authorization
+from auth_user.domain.model.authentication import AuthenticationByAccessToken, AuthenticationByRefreshToken
+from auth_user.domain.model.utils import decode_base64
+from auth_user.common.exceptions import UserAlreadyExists, RegistrationRequestAlreadyExists, \
     RegistrationRequestNotFound, InvalidSecurityData, RestorePasswordRequestAlreadyExists, \
     RestorePasswordRequestNotFound
 

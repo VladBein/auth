@@ -5,7 +5,7 @@ from datetime import datetime
 import json
 
 from .utils import hashing, decode_base64, encode_base64
-from src.auth_user.common.exceptions import InvalidSecurityData
+from auth_user.common.exceptions import InvalidSecurityData
 
 
 class Tokens(TypedDict):

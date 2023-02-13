@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from .model import AuthUser
 from .token import JWTToken
 from ..commands import CreateTokens
-from src.auth_user.common.exceptions import InvalidToken
+from auth_user.common.exceptions import InvalidToken
 
 
 Login = str
