@@ -18,14 +18,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'rest_framework',
-
-    'core',
-    'auth_user',
+    'project.core',
 ]
-
-# MIGRATION_MODULES = {'auth_user': 'src.auth_user.adapters.orm.migrations'}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -37,7 +32,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'core.urls'
+ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
@@ -55,19 +50,16 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'core.wsgi.application'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'auth_db',
-        'USER': 'admin_postgres',
-        'PASSWORD': '1234db',
+        'NAME': 'allocation',
+        'USER': 'vbein',
+        'PASSWORD': '123123vlad',
         'HOST': 'localhost',
         'PORT': '5432',
-        'TEST': {
-            'NAME': 'test_auth_db'
-        }
     }
 }
 

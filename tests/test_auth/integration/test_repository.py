@@ -3,7 +3,7 @@ from django.test import TestCase
 from src.auth_user.adapters.repository import DjangoORMRepository
 from src.auth_user.domain.model.user import ModelUser
 
-from src.core.models.user import User
+from project.core.models import User
 
 
 class RepositoryTestCase(TestCase):

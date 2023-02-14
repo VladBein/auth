@@ -1,10 +1,7 @@
 from setuptools import setup
 
 setup(
-    name="app",
-    version="1.0",
-    packages=[
-        "core",
-        "auth_user",
-    ],
+    name="auth",
+    version="0.1",
+    packages=["auth_user", "project"],
 )

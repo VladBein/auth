@@ -2,7 +2,7 @@ from typing import Optional
 import abc
 
 from src.auth_user.domain.model.user import ModelUser
-from src.core.models import User
+from project.core.models import User
 
 
 class AbstractRepository(abc.ABC):

@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase, APIClient
 
 from src.auth_user.adapters.repository import DjangoORMRepository
-from src.core.models import User
+from project.core.models import User
 from src.auth_user.domain.model.auth import ModelUser, encode_base64, Password
 
 
