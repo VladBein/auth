@@ -22,6 +22,11 @@ class JWTToken:
     iat: datetime
     exp: Minute
 
+    def __init__(self, sub, iat, exp):
+        self.sub = sub
+        self.iat = iat
+        self.exp = exp
+
     @classmethod
     def create_access_and_refresh_tokens(cls, sub: str, iat: datetime) -> Tokens:
         return Tokens(
@@ -47,11 +52,6 @@ class JWTToken:
             datetime.strptime(payload["iat"], FMT),
             payload["exp"]
         )
-
-    def __init__(self, sub, iat, exp):
-        self.sub = sub
-        self.iat = iat
-        self.exp = exp
 
     def __str__(self):
         header = self._get_header()

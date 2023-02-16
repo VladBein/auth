@@ -17,7 +17,7 @@ class RequestRegistration(Command):
 
 
 @dataclass
-class ConfirmRegistration(Command):
+class Registration(Command):
     uuid: str
 
 

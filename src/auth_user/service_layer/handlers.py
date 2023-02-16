@@ -1,19 +1,18 @@
-from typing import Union
 from enum import Enum
 from dataclasses import astuple, asdict
 
-from auth_user.domain import commands
-from auth_user.domain import events
-from .uow import UnitOfWork, DjangoORMUnitOfWork, DjangoORMAndRedisClientUnitOfWork
-from .serializers import UserDetailSerializer
 from auth_user.domain.model.user import ModelUser
 from auth_user.domain.model.token import JWTToken
 from auth_user.domain.model.authorization import Authorization
 from auth_user.domain.model.authentication import AuthenticationByAccessToken, AuthenticationByRefreshToken
 from auth_user.domain.model.utils import decode_base64
+from auth_user.domain import commands
+from auth_user.domain import events
+from .uow import UnitOfWork, DjangoORMUnitOfWork, DjangoORMAndRedisClientUnitOfWork
+from .serializers import UserDetailSerializer
 from auth_user.common.exceptions import UserAlreadyExists, RegistrationRequestAlreadyExists, \
     RegistrationRequestNotFound, InvalidSecurityData, RestorePasswordRequestAlreadyExists, \
-    RestorePasswordRequestNotFound
+    RestorePasswordRequestNotFound, UserNotFound
 from auth_user.adapters import email
 
 
@@ -34,14 +33,14 @@ def make_registration_request(cmd: commands.RequestRegistration, uow: DjangoORMA
             raise RegistrationRequestAlreadyExists("Registration request already exists")
 
         name = f"{RedisStatus.REGISTRATION.value} {user.email} {user.login} {user.uuid}"
-        uow.redis_client.hset(name, mapping=asdict(user))
+        uow.redis_client.hset(name, mapping={key: value for key, value in asdict(user).items() if key != "new"})
         uow.redis_client.expire(name, time=3600)  # ToDo: потом перенесем в настройки
 
         event = events.Registration(user.email, user.uuid)
         uow.events.append(event)
 
 
-def add_user(cmd: commands.ConfirmRegistration, uow: DjangoORMAndRedisClientUnitOfWork) -> dict:
+def add_user(cmd: commands.Registration, uow: DjangoORMAndRedisClientUnitOfWork) -> dict:
     with uow:
         pattern = f"* {cmd.uuid}"
         available_keys = uow.redis_client.keys(pattern)
@@ -71,7 +70,7 @@ def create_tokens(cmd: commands.CreateTokens, uow: UnitOfWork) -> dict:
 def authorize_user(cmd: commands.Authorize, uow: DjangoORMUnitOfWork) -> None:
     try:
         login, password = decode_base64(cmd.security_data).split(":")
-    except IndexError:
+    except Exception:
         raise InvalidSecurityData("Invalid security data")
 
     with uow:
@@ -84,17 +83,15 @@ def authorize_user(cmd: commands.Authorize, uow: DjangoORMUnitOfWork) -> None:
         uow & auth
 
 
-def authenticate_user(
-        cmd: Union[commands.AuthenticateByAccessToken, commands.AuthenticateByRefreshToken],
-        uow: UnitOfWork) -> str:
-    defines = {
-        commands.AuthenticateByAccessToken: AuthenticationByAccessToken,
-        commands.AuthenticateByRefreshToken: AuthenticationByRefreshToken,
-    }
-    auth = defines[type(cmd)]()
-    login = auth(cmd.security_data)
+def authenticate_user_by_access_token(cmd: commands.AuthenticateByAccessToken, uow: UnitOfWork) -> str:
+    auth = AuthenticationByAccessToken()
+    return auth(cmd.security_data)
+
+
+def authenticate_user_by_refresh_token(cmd: commands.AuthenticateByRefreshToken, uow: UnitOfWork) -> None:
+    auth = AuthenticationByRefreshToken()
+    auth(cmd.security_data)
     uow & auth
-    return login
 
 
 def change_password(cmd: commands.ChangePassword, uow: DjangoORMUnitOfWork) -> None:
@@ -110,7 +107,7 @@ def make_restore_password_request(
     with uow:
         user = uow.users.get(cmd.login)
         if not user or user.email != cmd.email:
-            raise UserAlreadyExists("User already exists")
+            raise UserNotFound("User not found")
 
         pattern = f"{RedisStatus.PASSWORD_RESTORE.value} {user.uuid}"
         if uow.redis_client.keys(pattern):
