@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from .model import AuthUser
 from .token import JWTToken
 from ..commands import CreateTokens
-from src.auth_user.common.exceptions import InvalidToken
+from auth_user.common.exceptions import InvalidToken
 
 
 Login = str
@@ -12,8 +12,8 @@ Login = str
 class Authentication:
     def __call__(self, security_data: str) -> Login:
         token = JWTToken.get_token_from_security_data(security_data)
-        if token.iat + timedelta(token.exp) > datetime.now():
-            raise InvalidToken
+        if datetime.now() > token.iat + timedelta(minutes=token.exp):
+            raise InvalidToken(f"Invalid token {security_data}")
         return token.sub
 
 
