@@ -1,8 +1,8 @@
 from typing import Optional
 import abc
 
-from src.auth_user.domain.model.user import ModelUser
-from src.core.models import User
+from auth_user.domain.model.user import ModelUser
+from project.core.models import User
 
 
 class AbstractRepository(abc.ABC):
@@ -20,38 +20,38 @@ class AbstractRepository(abc.ABC):
 
 
 class DjangoORMRepository(AbstractRepository):
-    def get(self, login: str) -> Optional[ModelUser]:
-        user = User.objects.filter(login=login).first()
+    def get(self, login):
+        instance_user = User.objects.filter(login=login).first()
         try:
             return ModelUser(
-                first_name=user.first_name,
-                last_name=user.last_name,
-                patronymic=user.patronymic,
-                email=user.email,
-                login=user.login,
-                password=user.password,
+                first_name=instance_user.first_name,
+                last_name=instance_user.last_name,
+                patronymic=instance_user.patronymic,
+                email=instance_user.email,
+                login=instance_user.login,
+                password=instance_user.password,
             )
         except AttributeError:
             return None
 
-    def add(self, model_user: ModelUser) -> None:
+    def add(self, user):
         User.objects.create(
-            first_name=model_user.first_name,
-            last_name=model_user.last_name,
-            patronymic=model_user.patronymic,
-            email=model_user.email,
-            login=model_user.login,
-            password=model_user.password
+            first_name=user.first_name,
+            last_name=user.last_name,
+            patronymic=user.patronymic,
+            email=user.email,
+            login=user.login,
+            password=user.password
         )
 
-    def update(self, model_user: ModelUser) -> None:
-        user = User.objects.filter(login=model_user.login).first()
+    def update(self, user):
+        instance_user = User.objects.filter(login=user.login).first()
         try:
-            user.first_name = model_user.first_name
-            user.last_name = model_user.last_name
-            user.patronymic = model_user.patronymic
-            user.email = model_user.email
-            user.password = model_user.password
-            user.save()
+            instance_user.first_name = user.first_name
+            instance_user.last_name = user.last_name
+            instance_user.patronymic = user.patronymic
+            instance_user.email = user.email
+            instance_user.password = user.password
+            instance_user.save()
         except AttributeError:
             return None

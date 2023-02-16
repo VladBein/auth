@@ -6,7 +6,12 @@ class Event:
 
 
 @dataclass
-class SendMessage(Event):
-    to: str
-    subject: str
-    msg: str
+class Registration(Event):
+    email: str
+    uuid: str
+
+
+@dataclass
+class RestorePassword(Event):
+    email: str
+    uuid: str
