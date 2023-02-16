@@ -16,11 +16,11 @@ EVENT_HANDLERS = {
 
 COMMAND_HANDLERS = {
     commands.RequestRegistration: handlers.make_registration_request,
-    commands.ConfirmRegistration: handlers.add_user,
+    commands.Registration: handlers.add_user,
     commands.CreateTokens: handlers.create_tokens,
     commands.Authorize: handlers.authorize_user,
-    commands.AuthenticateByAccessToken: handlers.authenticate_user,
-    commands.AuthenticateByRefreshToken: handlers.authenticate_user,
+    commands.AuthenticateByAccessToken: handlers.authenticate_user_by_access_token,
+    commands.AuthenticateByRefreshToken: handlers.authenticate_user_by_refresh_token,
     commands.ChangePassword: handlers.change_password,
     commands.RequestRestorePassword: handlers.make_restore_password_request,
     commands.RestorePassword: handlers.restore_password,
