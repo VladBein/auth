@@ -1,3 +1,4 @@
+from binascii import Error
 from typing import Union
 from enum import Enum
 from dataclasses import astuple, asdict
@@ -13,7 +14,7 @@ from auth_user.domain.model.authentication import AuthenticationByAccessToken, A
 from auth_user.domain.model.utils import decode_base64
 from auth_user.common.exceptions import UserAlreadyExists, RegistrationRequestAlreadyExists, \
     RegistrationRequestNotFound, InvalidSecurityData, RestorePasswordRequestAlreadyExists, \
-    RestorePasswordRequestNotFound
+    RestorePasswordRequestNotFound, UserNotFound
 from auth_user.adapters import email
 
 
@@ -34,7 +35,10 @@ def make_registration_request(cmd: commands.RequestRegistration, uow: DjangoORMA
             raise RegistrationRequestAlreadyExists("Registration request already exists")
 
         name = f"{RedisStatus.REGISTRATION.value} {user.email} {user.login} {user.uuid}"
-        uow.redis_client.hset(name, mapping=asdict(user))
+
+        user_info = asdict(user)
+        user_info['new'] = 'True' if user_info['new'] else 'False'
+        uow.redis_client.hset(name, mapping=user_info)
         uow.redis_client.expire(name, time=3600)  # ToDo: потом перенесем в настройки
 
         event = events.Registration(user.email, user.uuid)
@@ -71,7 +75,7 @@ def create_tokens(cmd: commands.CreateTokens, uow: UnitOfWork) -> dict:
 def authorize_user(cmd: commands.Authorize, uow: DjangoORMUnitOfWork) -> None:
     try:
         login, password = decode_base64(cmd.security_data).split(":")
-    except IndexError:
+    except (IndexError, Error):
         raise InvalidSecurityData("Invalid security data")
 
     with uow:
@@ -110,7 +114,7 @@ def make_restore_password_request(
     with uow:
         user = uow.users.get(cmd.login)
         if not user or user.email != cmd.email:
-            raise UserAlreadyExists("User already exists")
+            raise UserNotFound("User not found")
 
         pattern = f"{RedisStatus.PASSWORD_RESTORE.value} {user.uuid}"
         if uow.redis_client.keys(pattern):

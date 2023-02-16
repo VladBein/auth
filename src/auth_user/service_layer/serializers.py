@@ -14,9 +14,24 @@ class UserDetailSerializer(BaseUserSerializer):
     ...
 
 
-class RegistrationSerializer(BaseUserSerializer):
+class RequestRegistrationSerializer(BaseUserSerializer):
     password = CharField(max_length=128, allow_blank=False)
 
 
-class AuthorizationSerializer(Serializer):
-    Authorization = CharField(allow_blank=False)
+class ConfirmRegistrationSerializer(Serializer):
+    uuid = CharField(max_length=128, allow_blank=False)
+
+
+class ChangePasswordSerializer(Serializer):
+    new_password = CharField(max_length=128, allow_blank=False)
+
+
+class RestorePasswordSerializer(ConfirmRegistrationSerializer, ChangePasswordSerializer):
+    ...
+
+
+class RequestRestorePasswordSerializer(Serializer):
+    email = CharField(max_length=128, allow_blank=False)
+    login = CharField(max_length=128, allow_blank=False)
+
+
