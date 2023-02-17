@@ -1,7 +1,7 @@
 from typing import List, Union
 
-from ..commands import Command
-from ..events import Event
+from auth_user.domain.message.commands import Command
+from auth_user.domain.message.events import Event
 
 
 class AuthUser:

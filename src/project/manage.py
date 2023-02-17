@@ -19,7 +19,9 @@ def main():
         if sys.argv[1] == "test":
             if len(sys.argv) == 2:
                 sys.argv.append("../..")
-            elif len(sys.argv) == 3:
+            elif len(sys.argv) >= 3 and sys.argv[2].startswith("--"):
+                sys.argv.insert(2, "../..")
+            else:
                 sys.argv[2] = f"../../{sys.argv[2]}"
     except IndexError:
         pass

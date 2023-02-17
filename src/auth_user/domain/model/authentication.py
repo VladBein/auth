@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from .model import AuthUser
 from .token import JWTToken
-from ..commands import CreateTokens
+from auth_user.domain.message.commands import CreateTokens
 from auth_user.common.exceptions import InvalidToken
 
 
