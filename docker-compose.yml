@@ -1,0 +1,27 @@
+version: "3"
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    volumes:
+      - ./src:/src
+      - ./tests:/tests
+    ports:
+      - "5000:5000"
+    environment:
+      - DB_HOST=postgres
+      - DB_NAME=db_project
+      - DB_USER=admin
+      - DB_PASSWORD=123abc
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=db_project
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=123abc
+      - POSTGRES_INITDB_ARGS="-A md5"
