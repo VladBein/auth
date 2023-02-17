@@ -3,7 +3,7 @@ from datetime import datetime
 from .model import AuthUser
 from .user import ModelUser
 from .utils import hashing
-from ..commands import CreateTokens
+from auth_user.domain.message.commands import CreateTokens
 from auth_user.common.exceptions import InvalidPassword
 
 

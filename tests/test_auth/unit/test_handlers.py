@@ -10,7 +10,7 @@ from auth_user.domain.model.token import JWTToken
 from auth_user.domain.model.utils import encode_base64, hashing
 from auth_user.adapters.repository import AbstractRepository
 from auth_user.service_layer.uow import UnitOfWork
-from auth_user.domain import commands
+from auth_user.domain.message import commands
 from auth_user.service_layer.messagebus import handle
 from auth_user.common.exceptions import UserAlreadyExists, RegistrationRequestAlreadyExists, \
     RegistrationRequestNotFound, InvalidSecurityData, UserNotFound, RestorePasswordRequestAlreadyExists, \

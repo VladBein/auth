@@ -6,8 +6,7 @@ from auth_user.domain.model.token import JWTToken
 from auth_user.domain.model.authorization import Authorization
 from auth_user.domain.model.authentication import AuthenticationByAccessToken, AuthenticationByRefreshToken
 from auth_user.domain.model.utils import decode_base64
-from auth_user.domain import commands
-from auth_user.domain import events
+from ..domain.message import commands, events
 from .uow import UnitOfWork, DjangoORMUnitOfWork, DjangoORMAndRedisClientUnitOfWork
 from .serializers import UserDetailSerializer
 from auth_user.common.exceptions import UserAlreadyExists, RegistrationRequestAlreadyExists, \
