@@ -22,7 +22,6 @@ class AuthenticationByAccessToken(Authentication):
 
 
 class AuthenticationByRefreshToken(AuthUser, Authentication):
-    def __call__(self, security_data: str) -> Login:
+    def __call__(self, security_data: str) -> None:
         login = super().__call__(security_data)
         self.events.append(CreateTokens(sub=login, iat=datetime.now()))
-        return login
