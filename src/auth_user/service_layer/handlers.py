@@ -8,8 +8,8 @@ from auth_user.domain.model.authentication import AuthenticationByAccessToken, A
 from auth_user.domain.model.utils import decode_base64
 from auth_user.domain import commands
 from auth_user.domain import events
+from .serializers import UserSerializer
 from .uow import UnitOfWork, DjangoORMUnitOfWork, DjangoORMAndRedisClientUnitOfWork
-from .serializers import UserDetailSerializer
 from auth_user.common.exceptions import UserAlreadyExists, RegistrationRequestAlreadyExists, \
     RegistrationRequestNotFound, InvalidSecurityData, RestorePasswordRequestAlreadyExists, \
     RestorePasswordRequestNotFound, UserNotFound
@@ -59,7 +59,7 @@ def add_user(cmd: commands.Registration, uow: DjangoORMAndRedisClientUnitOfWork)
         )
         uow.users.add(user)
 
-        serializer = UserDetailSerializer(user)
+        serializer = UserSerializer(user)
         return serializer.data
 
 

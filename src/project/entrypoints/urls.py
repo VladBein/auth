@@ -1,12 +1,8 @@
-from django.urls import path
+from rest_framework import routers
 
-from .views import SecurityTokenView, RequestRegistrationView, ConfirmRegistrationView, RequestRestorePasswordView, \
-    RestorePasswordView
+from .views import SecurityTokenView, AccountView
 
-urlpatterns = [
-    path('security/token/', SecurityTokenView.as_view(), name='security_token'),
-    path('account/new/', RequestRegistrationView.as_view(), name='request_reg'),
-    path('account/', ConfirmRegistrationView.as_view(), name='confirm'),
-    path('account/password/restore/', RequestRestorePasswordView.as_view(), name='request_res'),
-    path('account/password/', RestorePasswordView.as_view(), name='restore'),
-]
+router = routers.DefaultRouter()
+router.register('account', AccountView, basename="account")
+router.register('security', SecurityTokenView, basename="security_token")
+urlpatterns = router.urls
