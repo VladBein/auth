@@ -23,5 +23,5 @@ docker compose run --rm app sh -c "python manage.py test"
 ```sh
 python3.10 -m venv .venv && source .venv/bin/activate # or however you like to create virtualenvs
 pip install -e src/
-# src/project/manage.py ...
+# python src/project/manage.py ...
 ```
