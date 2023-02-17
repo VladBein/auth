@@ -1,7 +1,7 @@
 import logging
 from typing import List, Dict, Callable, Type, Union
 
-from auth_user.domain import events, commands
+from auth_user.domain.message import commands, events
 from auth_user.service_layer import handlers
 from auth_user.service_layer.uow import UnitOfWork
 
