@@ -1,5 +1,5 @@
-from datetime import datetime
 from typing import Dict, Union, List, Optional
+from datetime import datetime
 import re
 from unittest import mock
 
@@ -8,10 +8,10 @@ from django.test import TestCase
 from auth_user.domain.model.user import ModelUser
 from auth_user.domain.model.token import JWTToken
 from auth_user.domain.model.utils import encode_base64, hashing
+from auth_user.adapters.repository import AbstractRepository
+from auth_user.service_layer.uow import UnitOfWork
 from auth_user.domain import commands
 from auth_user.service_layer.messagebus import handle
-from auth_user.service_layer.uow import UnitOfWork
-from auth_user.adapters.repository import AbstractRepository
 from auth_user.common.exceptions import UserAlreadyExists, RegistrationRequestAlreadyExists, \
     RegistrationRequestNotFound, InvalidSecurityData, UserNotFound, RestorePasswordRequestAlreadyExists, \
     RestorePasswordRequestNotFound
@@ -98,17 +98,13 @@ class RequestRegistrationTestCase(TestCase):
     def test_fail_registration_request_because_user_exists_in_repository(self):
         user = ModelUser(**USER_MAPPER)
         uow = FakeUnitOfWork(repository=FakeRepository([user]))
-
-        with self.assertRaises(UserAlreadyExists):
-            handle(self._cmd, uow)
+        self.assertRaises(UserAlreadyExists, handle, self._cmd, uow)
 
     def test_fail_registration_request_because_request_exists_in_redis(self):
         user = ModelUser(**USER_MAPPER)
         key = f"0 {user.email} login2 uuid-test"
         uow = FakeUnitOfWork(redis_client=FakeRedisClient({key: USER_MAPPER}))
-
-        with self.assertRaises(RegistrationRequestAlreadyExists):
-            handle(self._cmd, uow)
+        self.assertRaises(RegistrationRequestAlreadyExists, handle, self._cmd, uow)
 
 
 class RegistrationTestCase(TestCase):
@@ -131,9 +127,7 @@ class RegistrationTestCase(TestCase):
 
     def test_fail_registration_because_request_not_in_redis(self):
         uow = FakeUnitOfWork()
-
-        with self.assertRaises(RegistrationRequestNotFound):
-            handle(self._cmd, uow)
+        self.assertRaises(RegistrationRequestNotFound, handle, self._cmd, uow)
 
 
 class AuthorizationTestCase(TestCase):
@@ -152,16 +146,12 @@ class AuthorizationTestCase(TestCase):
 
     def test_fail_authorization_because_user_not_in_repository(self):
         uow = FakeUnitOfWork()
-
-        with self.assertRaises(InvalidSecurityData):
-            handle(self._cmd, uow)
+        self.assertRaises(InvalidSecurityData, handle, self._cmd, uow)
 
     def test_fail_authorization_because_invalid_security_data(self):
         self._cmd.security_data = "test"
         uow = FakeUnitOfWork()
-
-        with self.assertRaises(InvalidSecurityData):
-            handle(self._cmd, uow)
+        self.assertRaises(InvalidSecurityData, handle, self._cmd, uow)
 
 
 class AuthenticationTestCase(TestCase):
@@ -203,16 +193,12 @@ class RequestRestorePasswordTestCase(TestCase):
 
     def test_fail_restore_password_request_because_user_not_in_repository(self):
         uow = FakeUnitOfWork()
-
-        with self.assertRaises(UserNotFound):
-            handle(self._cmd, uow)
+        self.assertRaises(UserNotFound, handle, self._cmd, uow)
 
     def test_fail_restore_password_request_because_invalid_email(self):
         self._cmd.email = "email2"
         uow = FakeUnitOfWork()
-
-        with self.assertRaises(UserNotFound):
-            handle(self._cmd, uow)
+        self.assertRaises(UserNotFound, handle, self._cmd, uow)
 
     def test_fail_restore_password_request_because_request_exists_in_redis(self):
         user = ModelUser(**USER_MAPPER)
@@ -221,9 +207,7 @@ class RequestRestorePasswordTestCase(TestCase):
             repository=FakeRepository([user]),
             redis_client=FakeRedisClient({key: USER_MAPPER})
         )
-
-        with self.assertRaises(RestorePasswordRequestAlreadyExists):
-            handle(self._cmd, uow)
+        self.assertRaises(RestorePasswordRequestAlreadyExists, handle, self._cmd, uow)
 
 
 class RestorePasswordTestCase(TestCase):
@@ -242,8 +226,5 @@ class RestorePasswordTestCase(TestCase):
         self.assertEqual(uow.users.get(self._user.login).password, hashing("new-password"))
 
     def test_fail_restore_password_because_request_not_in_redis(self):
-
         uow = FakeUnitOfWork()
-
-        with self.assertRaises(RestorePasswordRequestNotFound):
-            handle(self._cmd, uow)
+        self.assertRaises(RestorePasswordRequestNotFound, handle, self._cmd, uow)

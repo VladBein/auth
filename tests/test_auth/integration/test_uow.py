@@ -39,6 +39,7 @@ class DjangoORMUnitOfWorkTestCase(TestCase):
     def test_uow_can_update_a_user(self):
         self._insert_user()
         user = self._get_model_user()
+        user.password = "hashed-password2"
 
         with DjangoORMUnitOfWork() as uow:
             uow.users.update(user)
@@ -50,5 +51,4 @@ class DjangoORMUnitOfWorkTestCase(TestCase):
         User.objects.create(**self._user_mapper)
 
     def _get_model_user(self):
-        self._user_mapper["password"] = "hashed-password2"
         return ModelUser(**self._user_mapper)

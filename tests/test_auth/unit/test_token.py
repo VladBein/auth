@@ -33,7 +33,7 @@ class TokenTestCase(TestCase):
         self.assertEqual(token.iat, initial_token.iat)
         self.assertEqual(token.exp, initial_token.exp)
 
-    def test_error_getting_token_from_security_data(self):
+    def test_errors_getting_token_from_security_data(self):
         self.assertRaises(
             InvalidSecurityData,
             JWTToken.get_token_from_security_data,

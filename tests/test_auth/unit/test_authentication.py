@@ -2,8 +2,8 @@ from datetime import datetime
 
 from django.test import TestCase
 
-from auth_user.domain.model.token import JWTToken
 from auth_user.domain.model.authentication import Authentication
+from auth_user.domain.model.token import JWTToken
 from auth_user.common.exceptions import InvalidToken
 
 
