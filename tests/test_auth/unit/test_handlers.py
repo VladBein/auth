@@ -1,4 +1,3 @@
-from typing import Dict, Union, List, Optional
 from datetime import datetime
 import re
 from unittest import mock
@@ -43,10 +42,12 @@ class FakeRepository(AbstractRepository):
 
 
 class FakeRedisClient:
-    def __init__(self, data):
-        self._data = data  # type: Dict[str, Union[str, dict]]
+    _data: dict[str, str | dict]
 
-    def keys(self, pattern: str) -> List[str]:
+    def __init__(self, data):
+        self._data = data  # type:
+
+    def keys(self, pattern: str) -> list[str]:
         pattern = pattern.replace("*", ".*")
         return [key for key in self._data.keys() if re.match(pattern, key) is not None]
 
@@ -56,7 +57,7 @@ class FakeRedisClient:
     def set(self, name: str, value: str) -> None:
         self._data[name] = value
 
-    def get(self, name: str) -> Optional[str]:
+    def get(self, name: str) -> str | None:
         return self._data.get(name)
 
     def hset(self, name: str, mapping: dict) -> None:

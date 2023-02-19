@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import List, Union
 
 from redis import Redis
 
@@ -11,7 +10,7 @@ from auth_user.adapters.repository import AbstractRepository, DjangoORMRepositor
 
 class UnitOfWork:
     users: AbstractRepository
-    events: List[Union[Command, Event]]
+    events: list[Command | Event]
 
     def __init__(self):
         self.events = []
