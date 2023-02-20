@@ -7,7 +7,6 @@ from auth_user.service_layer.uow import DjangoORMUnitOfWork
 from project.core.models import User
 
 
-# ToDo: тестировать redis необходимо в контейнере
 class DjangoORMUnitOfWorkTestCase(TestCase):
     def setUp(self):
         self._user_mapper = dict(

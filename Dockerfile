@@ -1,13 +1,17 @@
 FROM python:3.10-alpine
 
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+WORKDIR /src/project
+
 COPY requirements.txt /tmp/
 RUN pip install -r /tmp/requirements.txt
 
-RUN mkdir -p /src
-COPY src/ /src/
-RUN pip install -e /src
 COPY tests/ /tests/
 
-WORKDIR /src/project
-CMD python /project/manage.py migrate && \
-    python /project/manage.py runserver 0.0.0.0:5000
+COPY src/ /src/
+RUN pip install -e /src
+
+CMD python manage.py migrate && \
+    python manage.py runserver 0.0.0.0:8000
