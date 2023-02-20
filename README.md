@@ -5,9 +5,9 @@
 ## Building the containers
 ```sh
 docker compose build
-docker compose up -d app
+docker compose up -d api
 # test
-docker compose run --rm app sh -c "python manage.py test"
+docker compose run --rm api sh -c "python manage.py test"
 ```
 
 ## Creating a local virtualenv (optional)

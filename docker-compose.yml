@@ -1,27 +1,23 @@
-version: "3"
+version: "3.8"
 services:
 
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+  api:
+    build: .
+    env_file:
+      - .env
     depends_on:
       - postgres
+      - redis
     volumes:
       - ./src:/src
       - ./tests:/tests
     ports:
-      - "5000:5000"
-    environment:
-      - DB_HOST=postgres
-      - DB_NAME=db_project
-      - DB_USER=admin
-      - DB_PASSWORD=123abc
+      - "${API_PORT}:8000"
 
   postgres:
     image: postgres:15-alpine
-    environment:
-      - POSTGRES_DB=db_project
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=123abc
-      - POSTGRES_INITDB_ARGS="-A md5"
+    env_file:
+      - .env
+
+  redis:
+    image: redis:alpine
