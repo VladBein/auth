@@ -1,17 +1,16 @@
 from __future__ import annotations
-from typing import List, Union
 
 from redis import Redis
 
-from auth_user.adapters.repository import AbstractRepository, DjangoORMRepository
-from auth_user.domain.commands import Command
-from auth_user.domain.events import Event
 from auth_user.domain.model.model import AuthUser
+from auth_user.domain.message.commands import Command
+from auth_user.domain.message.events import Event
+from auth_user.adapters.repository import AbstractRepository, DjangoORMRepository
 
 
 class UnitOfWork:
     users: AbstractRepository
-    events: List[Union[Command, Event]]
+    events: list[Command | Event]
 
     def __init__(self):
         self.events = []

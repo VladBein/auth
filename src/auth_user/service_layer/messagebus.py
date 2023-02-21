@@ -1,39 +1,36 @@
 import logging
-from typing import List, Dict, Callable, Type, Union
+from typing import Type, Callable, Any
 
+from auth_user.domain.message import commands, events
+from auth_user.service_layer import handlers
+from auth_user.service_layer.uow import UnitOfWork
 
-from . import handlers
-from .uow import UnitOfWork
-from ..domain import events, commands
 
 logger = logging.getLogger(__name__)
 
 
 EVENT_HANDLERS = {
-    events.SendMessage: [handlers.send_message],
-}  # type: Dict[Type[events.Event], List[Callable]]
+    events.Registration: [handlers.send_registration_confirmation],
+    events.RestorePassword: [handlers.send_restore_password_confirmation],
+}  # type: dict[Type[events.Event], list[Callable]]
 
 COMMAND_HANDLERS = {
     commands.RequestRegistration: handlers.make_registration_request,
-    commands.ConfirmRegistration: handlers.add_user,
+    commands.Registration: handlers.add_user,
     commands.CreateTokens: handlers.create_tokens,
     commands.Authorize: handlers.authorize_user,
-    commands.AuthenticateByAccessToken: handlers.authenticate_user,
-    commands.AuthenticateByRefreshToken: handlers.authenticate_user,
+    commands.AuthenticateByAccessToken: handlers.authenticate_user_by_access_token,
+    commands.AuthenticateByRefreshToken: handlers.authenticate_user_by_refresh_token,
     commands.ChangePassword: handlers.change_password,
     commands.RequestRestorePassword: handlers.make_restore_password_request,
     commands.RestorePassword: handlers.restore_password,
-}  # type: Dict[Type[commands.Command], Callable]
+}  # type: dict[Type[commands.Command], Callable]
 
 
-Message = Union[commands.Command, events.Event]
+Message = commands.Command | events.Event
 
 
-def handle_event(
-    event: events.Event,
-    queue: List[Message],
-    uow: UnitOfWork,
-):
+def handle_event(event: events.Event, queue: list[Message], uow: UnitOfWork) -> None:
     for handler in EVENT_HANDLERS[type(event)]:
         try:
             logger.debug("handling event %s with handler %s", event, handler)
@@ -44,11 +41,7 @@ def handle_event(
             continue
 
 
-def handle_command(
-    command: commands.Command,
-    queue: List[Message],
-    uow: UnitOfWork,
-):
+def handle_command(command: commands.Command, queue: list[Message], uow: UnitOfWork) -> Any:
     logger.debug("handling command %s", command)
     try:
         handler = COMMAND_HANDLERS[type(command)]
@@ -60,7 +53,7 @@ def handle_command(
         raise
 
 
-def handle(message: Message, uow: UnitOfWork):
+def handle(message: Message, uow: UnitOfWork) -> list[Any]:
     results = []
     queue = [message]
     while queue:

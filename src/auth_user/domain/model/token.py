@@ -8,6 +8,10 @@ from .utils import hashing, decode_base64, encode_base64
 from auth_user.common.exceptions import InvalidSecurityData
 
 
+FMT = "%Y-%m-%d %H:%M:%S"
+Minute = int
+
+
 class Tokens(TypedDict):
     access: str
     refresh: str
@@ -16,20 +20,25 @@ class Tokens(TypedDict):
 class JWTToken:
     sub: str
     iat: datetime
-    exp: int
+    exp: Minute
+
+    def __init__(self, sub, iat, exp):
+        self.sub = sub
+        self.iat = iat
+        self.exp = exp
 
     @classmethod
     def create_access_and_refresh_tokens(cls, sub: str, iat: datetime) -> Tokens:
         return Tokens(
             access=str(cls(sub, iat, exp=30)),  # ToDo: потом перенесем в настройки
-            refresh=str(cls(sub, iat, exp=1440)),
+            refresh=str(cls(sub, iat, exp=10080)),
         )
 
     @classmethod
     def get_token_from_security_data(cls, security_data: str) -> JWTToken:
         try:
             header, payload, signature = security_data.split(".")
-        except IndexError:
+        except (IndexError, ValueError):
             raise InvalidSecurityData("Invalid security data")
 
         hashed_signature = hashing(f"{header}.{payload}")
@@ -38,12 +47,11 @@ class JWTToken:
 
         decoded_payload = decode_base64(payload)
         payload = json.loads(decoded_payload.replace("'", "\""))
-        return cls(payload["sub"], payload["iat"], payload["exp"])
-
-    def __init__(self, sub, iat, exp):
-        self.sub = sub
-        self.iat = iat
-        self.exp = exp
+        return cls(
+            payload["sub"],
+            datetime.strptime(payload["iat"], FMT),
+            payload["exp"]
+        )
 
     def __str__(self):
         header = self._get_header()
@@ -62,6 +70,6 @@ class JWTToken:
     def _get_payload(self) -> dict:
         return {
             "sub": self.sub,
-            "iat": self.iat,
+            "iat": self.iat.strftime(FMT),
             "exp": self.exp,
         }
