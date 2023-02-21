@@ -1,4 +1,3 @@
-from typing import Optional
 import abc
 
 from auth_user.domain.model.user import ModelUser
@@ -7,7 +6,7 @@ from project.core.models import User
 
 class AbstractRepository(abc.ABC):
     @abc.abstractmethod
-    def get(self, login: str) -> Optional[ModelUser]:
+    def get(self, login: str) -> ModelUser | None:
         raise NotImplementedError
 
     @abc.abstractmethod

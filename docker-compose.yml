@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+
+  api:
+    build: .
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./src:/src
+      - ./tests:/tests
+    ports:
+      - "${API_PORT}:8000"
+
+  postgres:
+    image: postgres:15-alpine
+    env_file:
+      - .env
+
+  redis:
+    image: redis:alpine
